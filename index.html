@@ -15,6 +15,14 @@
       :root {
         scroll-padding-top: 5rem;
       }
+      
+      /* Mobile Scaling Optimization: Reduce root font-size by 10% on small screens */
+      @media (max-width: 768px) {
+        html {
+          font-size: 90%;
+        }
+      }
+
       body {
         font-family: 'Poppins', 'Kalpurush', sans-serif;
         background-color: #fafbfc;
