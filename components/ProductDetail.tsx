@@ -76,14 +76,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose, onAddTo
               <div className="space-y-6">
                 <div className="flex items-center space-x-3">
                    <div className="h-px flex-1 bg-gray-100"></div>
-                   <h3 className="font-black text-gray-400 uppercase tracking-[0.3em] text-[10px]">Description / বর্ণনা</h3>
+                   <h3 className="font-black text-gray-400 uppercase tracking-[0.3em] text-[10px]">Description</h3>
                    <div className="h-px flex-1 bg-gray-100"></div>
                 </div>
                 <p className="text-xl text-gray-600 leading-relaxed font-light italic">
                   "{product.description}"
                 </p>
                 <p className="text-gray-500 leading-relaxed">
-                  আমাদের {product.name} আপনার ত্বকের গভীর থেকে যত্ন নিতে এবং প্রাকৃতিক উজ্জ্বলতা ফিরিয়ে আনতে বিশেষভাবে তৈরি। এতে কোনো ক্ষতিকর কেমিক্যাল নেই এবং এটি সম্পূর্ণ অর্গানিক।
+                  Our {product.name} is specially formulated to deeply nourish your skin and restore its natural radiance. It contains no harmful chemicals and is made with 100% organic elements.
                 </p>
               </div>
 
@@ -95,13 +95,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose, onAddTo
                 >
                   <div className="absolute inset-0 bg-gold translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                   <i className="fa-solid fa-bag-shopping text-xl relative z-10 group-hover:text-navy transition-colors"></i>
-                  <span className="relative z-10 group-hover:text-navy transition-colors uppercase tracking-widest text-xs">ব্যাগ-এ যুক্ত করুন</span>
+                  <span className="relative z-10 group-hover:text-navy transition-colors uppercase tracking-widest text-xs">Add to Bag</span>
                 </button>
                 <button 
                    onClick={() => onBuyNow?.(product)}
                   className="py-5 px-8 bg-white border-2 border-navy text-navy font-black rounded-3xl shadow-lg hover:bg-navy hover:text-white transition-all active:scale-95 uppercase tracking-widest text-xs"
                 >
-                  সরাসরি কিনুন
+                  Buy Now
                 </button>
               </div>
 

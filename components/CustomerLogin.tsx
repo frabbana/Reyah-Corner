@@ -26,11 +26,11 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateEmail(formData.email)) {
-      setErrorMsg('অনুগ্রহ করে সঠিক ইমেইল দিন।');
+      setErrorMsg('Please enter a valid email address.');
       return;
     }
     if (formData.password.length < 6) {
-      setErrorMsg('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।');
+      setErrorMsg('Password must be at least 6 characters long.');
       return;
     }
 
@@ -46,7 +46,7 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
           .eq('email', formData.email.toLowerCase())
           .maybeSingle();
 
-        if (existingUser) throw new Error("এই ইমেইল দিয়ে অলরেডি একাউন্ট আছে।");
+        if (existingUser) throw new Error("An account with this email already exists.");
 
         const newUser: User = {
           id: Math.random().toString(36).substr(2, 9),
@@ -64,7 +64,7 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
             id: newUser.id, 
             name: newUser.name, 
             email: newUser.email, 
-            password: formData.password, // Storing for simple check
+            password: formData.password, 
             addresses: newUser.addresses, 
             reward_points: newUser.rewardPoints,
             skin_profile: newUser.skinProfile,
@@ -72,10 +72,10 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
           }
         ]);
 
-        if (insertError) throw new Error("একাউন্ট তৈরি করতে সমস্যা হয়েছে।");
+        if (insertError) throw new Error("Could not create account. Please try again.");
         onLogin(newUser);
       } else {
-        // Secure Login Logic (Checking email AND password)
+        // Secure Login Logic
         const { data, error } = await supabase
           .from('users')
           .select('*')
@@ -83,7 +83,7 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
           .eq('password', formData.password)
           .maybeSingle();
 
-        if (error || !data) throw new Error("ইমেইল বা পাসওয়ার্ড ভুল।");
+        if (error || !data) throw new Error("Invalid email or password.");
         
         const loggedInUser: User = {
           id: data.id,
@@ -115,18 +115,18 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
             <div className="w-16 h-16 bg-gold/10 text-gold rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fa-solid fa-user-lock text-2xl"></i>
             </div>
-            <h2 className="text-3xl font-bold text-navy">{isSignUp ? 'নতুন একাউন্ট' : 'ফিরে আসায় স্বাগতম'}</h2>
-            <p className="text-gray-400 text-sm mt-2">আপনার তথ্য আমাদের কাছে সুরক্ষিত।</p>
+            <h2 className="text-3xl font-bold text-navy">{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
+            <p className="text-gray-400 text-sm mt-2">Your information is secure with us.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">পুরো নাম</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Full Name</label>
                 <input 
                   required
                   type="text" 
-                  placeholder="আপনার নাম লিখুন"
+                  placeholder="Enter your full name"
                   className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none ring-1 ring-gray-100 focus:ring-2 focus:ring-gold outline-none transition text-navy"
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
@@ -134,7 +134,7 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
               </div>
             )}
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">ইমেইল</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Email Address</label>
               <input 
                 required
                 type="email" 
@@ -145,7 +145,7 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">পাসওয়ার্ড</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Password</label>
               <input 
                 required
                 type="password" 
@@ -171,7 +171,7 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               ) : (
-                <span>{isSignUp ? 'সাইন আপ করুন' : 'লগিন করুন'}</span>
+                <span>{isSignUp ? 'Sign Up' : 'Login'}</span>
               )}
             </button>
           </form>
@@ -184,7 +184,7 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin 
               }}
               className="text-xs font-bold text-navy hover:text-gold transition border-b border-navy/20"
             >
-              {isSignUp ? 'আগে থেকেই একাউন্ট আছে? লগিন করুন' : "একাউন্ট নেই? নতুন একাউন্ট খুলুন"}
+              {isSignUp ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
             </button>
           </div>
         </div>

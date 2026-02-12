@@ -53,6 +53,7 @@ const App: React.FC = () => {
     paymentMethod: o.payment_method,
     paymentStatus: o.payment_status,
     transactionId: o.transaction_id,
+    // Fix: Corrected property name from 'shipping_address' to 'shippingAddress' to match Order interface
     shippingAddress: o.shipping_address,
     trackingId: o.tracking_id,
     courier: o.courier
@@ -127,21 +128,21 @@ const App: React.FC = () => {
 
   const addToCart = (product: Product) => {
     if (product.stock <= 0) {
-      showToast(`দুঃখিত, "${product.name}" এই মুহূর্তে স্টকে নেই।`);
+      showToast(`Sorry, "${product.name}" is currently out of stock.`);
       return;
     }
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
         if (existing.quantity >= product.stock) {
-          showToast(`স্টকে আর পণ্য নেই।`);
+          showToast(`Maximum available stock reached.`);
           return prev;
         }
         return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
       }
       return [...prev, { ...product, quantity: 1 }];
     });
-    showToast(`"${product.name}" ব্যাগে যুক্ত করা হয়েছে!`);
+    showToast(`"${product.name}" added to your bag!`);
   };
 
   const finalizeOrder = async (shippingAddress: Address, paymentMethod: PaymentMethod, transactionId?: string) => {
@@ -177,11 +178,11 @@ const App: React.FC = () => {
       setCart([]);
       setCurrentUser(updatedUser);
       setIsCheckoutReviewOpen(false);
-      showToast("অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!");
+      showToast("Order placed successfully!");
       setIsCustomerProfileOpen(true);
     } else {
       console.error("Order insertion error:", error);
-      showToast("অর্ডার করতে সমস্যা হয়েছে। ডাটাবেজ চেক করুন।");
+      showToast("Could not place order. Please check your connection.");
     }
   };
 
@@ -198,7 +199,7 @@ const App: React.FC = () => {
     if (!error) {
       setCurrentUser(updatedUser);
     } else {
-      showToast("তথ্য ডাটাবেজে আপডেট করতে সমস্যা হয়েছে।");
+      showToast("Could not update information in database.");
     }
   };
 
@@ -211,14 +212,14 @@ const App: React.FC = () => {
     setIsAdminAuthenticated(false);
     setIsAdminMode(false);
     localStorage.removeItem('reyah-admin-auth');
-    showToast("অ্যাডমিন প্যানেল থেকে লগ আউট করা হয়েছে।");
+    showToast("Logged out from admin panel.");
   };
 
   const handleUpdateOrderStatus = async (orderId: string, status: Order['status']) => {
     const { error } = await supabase.from('orders').update({ status }).eq('id', orderId);
     if (!error) {
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
-      showToast(`অর্ডার স্ট্যাটাস ${status} এ পরিবর্তন করা হয়েছে।`);
+      showToast(`Order status updated to ${status}.`);
     }
   };
 

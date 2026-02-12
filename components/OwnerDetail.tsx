@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface OwnerDetailProps {
@@ -34,7 +35,7 @@ const OwnerDetail: React.FC<OwnerDetailProps> = ({ isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto px-6 py-10">
           <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
             
-            {/* Owner Visual Representation - Reverted to Initials */}
+            {/* Owner Visual Representation */}
             <div className="lg:w-1/3 w-64 relative group flex-shrink-0">
               <div className="absolute -inset-6 bg-[#c5a059]/20 rounded-[3.5rem] blur-3xl group-hover:bg-[#c5a059]/30 transition-all duration-1000"></div>
               
@@ -72,16 +73,16 @@ const OwnerDetail: React.FC<OwnerDetailProps> = ({ isOpen, onClose }) => {
                   "Beauty is not just about appearances; it is a reflection of how we care for the soul and the body Allah has gifted us. Reyah Corner was born from a desire to bring 'Barakah' back into our daily self-care routines."
                 </p>
                 <div className="not-italic text-white/90 text-sm md:text-base border-l-2 border-[#c5a059]/40 pl-6 py-5 bg-white/5 backdrop-blur-sm rounded-r-3xl text-left border border-white/5">
-                  উম্মে তামিমা একজন উদ্যোক্তা যিনি বিশুদ্ধতা এবং স্নিগ্ধতায় বিশ্বাসী। তিনি মনে করেন, প্রকৃতির মধ্যেই লুকিয়ে আছে আমাদের ত্বকের প্রকৃত প্রশান্তি। রেয়াহ কর্নার শুধুমাত্র একটি ব্র্যান্ড নয়, এটি তামিমা’র একটি সপ্ন—যেখানে ট্রাস্ট এবং কোয়ালিটি সবকিছুর উর্ধ্বে।
+                  Umme Tamima is a visionary entrepreneur who believes in purity and gentleness. She believes that the true sanctuary for our skin is found within nature. Reyah Corner is more than just a brand; it is Tamima’s dream—where trust and quality stand above all.
                 </div>
               </div>
 
               {/* Pillars Section */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
                 {[
-                  { icon: 'fa-heart', label: 'Trust', desc: 'নির্ভরযোগ্য উপাদান' },
-                  { icon: 'fa-gem', label: 'Quality', desc: 'সেরা মান' },
-                  { icon: 'fa-leaf', label: 'Simplicity', desc: 'প্রাকৃতিক সহজতা' }
+                  { icon: 'fa-heart', label: 'Trust', desc: 'Reliable Ingredients' },
+                  { icon: 'fa-gem', label: 'Quality', desc: 'Premium Standards' },
+                  { icon: 'fa-leaf', label: 'Simplicity', desc: 'Natural Ease' }
                 ].map((item, idx) => (
                   <div key={idx} className="bg-white/[0.03] border border-white/10 p-6 rounded-[2rem] group hover:border-[#c5a059]/40 hover:bg-white/[0.06] transition-all text-center">
                     <i className={`fa-solid ${item.icon} text-[#c5a059] text-xl mb-4 group-hover:scale-125 transition-transform duration-500`}></i>

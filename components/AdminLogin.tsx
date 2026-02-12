@@ -66,7 +66,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, onClose }) => {
 
             {error && (
               <p className="text-xs text-red-600 text-center font-bold animate-pulse">
-                ভুল ইউজারনাম বা পাসওয়ার্ড! আবার চেষ্টা করুন।
+                Incorrect username or password! Please try again.
               </p>
             )}
 

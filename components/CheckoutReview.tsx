@@ -57,7 +57,7 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
 
   const handleConfirm = () => {
     if (paymentMethod !== 'COD' && transactionId.trim().length < 8) {
-      setValidationError('অনুগ্রহ করে সঠিক ট্রানজাকশন আইডি দিন।');
+      setValidationError('Please enter a valid Transaction ID.');
       return;
     }
     if (selectedAddress) {
@@ -79,7 +79,7 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
              </div>
              <div>
                 <h2 className="text-xl font-bold text-navy">
-                  {step === 'review' ? 'অর্ডার রিভিউ' : 'পেমেন্ট ভেরিফিকেশন'}
+                  {step === 'review' ? 'Review Order' : 'Payment Verification'}
                 </h2>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mt-1">
                   Secure Checkout
@@ -97,24 +97,24 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
               {/* Shipping Address */}
               <section className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">ডেলিভারি ঠিকানা</h3>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">Delivery Address</h3>
                   {!isAddingAddress && user.addresses.length > 0 && (
-                    <button onClick={() => setIsAddingAddress(true)} className="text-[10px] font-bold text-gold hover:text-navy transition border-b border-gold/30">+ নতুন ঠিকানা</button>
+                    <button onClick={() => setIsAddingAddress(true)} className="text-[10px] font-bold text-gold hover:text-navy transition border-b border-gold/30">+ New Address</button>
                   )}
                 </div>
 
                 {isAddingAddress ? (
                   <form onSubmit={handleAddAddress} className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <input name="fullName" required defaultValue={user.name} placeholder="পুরো নাম" className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm" />
-                      <input name="phone" required defaultValue={user.phone} placeholder="ফোন নম্বর" className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm" />
+                      <input name="fullName" required defaultValue={user.name} placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm" />
+                      <input name="phone" required defaultValue={user.phone} placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <input name="district" required placeholder="জেলা" className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm" />
+                      <input name="district" required placeholder="District" className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm" />
                       <input name="label" defaultValue="Home" className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm" />
                     </div>
-                    <textarea name="details" required rows={2} className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm resize-none" placeholder="বিস্তারিত ঠিকানা লিখুন"></textarea>
-                    <button type="submit" className="w-full py-3 bg-navy text-white font-bold rounded-xl text-xs uppercase tracking-widest">ঠিকানা সংরক্ষণ করুন</button>
+                    <textarea name="details" required rows={2} className="w-full px-4 py-3 rounded-xl bg-white ring-1 ring-gray-100 outline-none text-sm resize-none" placeholder="Detailed Address (House/Road/Area)"></textarea>
+                    <button type="submit" className="w-full py-3 bg-navy text-white font-bold rounded-xl text-xs uppercase tracking-widest">Save Address</button>
                   </form>
                 ) : (
                   <div className="space-y-4">
@@ -134,13 +134,13 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
 
               {/* Payment Method */}
               <section className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">পেমেন্ট মেথড নির্বাচন করুন</h3>
+                <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">Select Payment Method</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { id: 'COD', label: 'ক্যাশ অন ডেলিভারি', icon: 'fa-truck-fast', color: 'text-navy', bg: 'bg-gray-100' },
-                    { id: 'bKash', label: 'বিকাশ (বিকাশ সেন্ড মানি)', icon: 'fa-wallet', color: 'text-[#D82A77]', bg: 'bg-[#D82A77]/10' },
-                    { id: 'Nagad', label: 'নগদ', icon: 'fa-building-columns', color: 'text-[#f7941d]', bg: 'bg-[#f7941d]/10' },
-                    { id: 'Rocket', label: 'রকেট', icon: 'fa-mobile-screen', color: 'text-[#8c3494]', bg: 'bg-[#8c3494]/10' }
+                    { id: 'COD', label: 'Cash On Delivery', icon: 'fa-truck-fast', color: 'text-navy', bg: 'bg-gray-100' },
+                    { id: 'bKash', label: 'bKash (Send Money)', icon: 'fa-wallet', color: 'text-[#D82A77]', bg: 'bg-[#D82A77]/10' },
+                    { id: 'Nagad', label: 'Nagad', icon: 'fa-building-columns', color: 'text-[#f7941d]', bg: 'bg-[#f7941d]/10' },
+                    { id: 'Rocket', label: 'Rocket', icon: 'fa-mobile-screen', color: 'text-[#8c3494]', bg: 'bg-[#8c3494]/10' }
                   ].map((method) => (
                     <button
                       key={method.id}
@@ -164,15 +164,15 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
               <section className="bg-navy text-white p-8 rounded-[2.5rem] space-y-4 shadow-2xl relative overflow-hidden">
                  <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                  <div className="flex justify-between items-center text-sm opacity-60">
-                    <span>পণ্যের মূল্য</span>
+                    <span>Products Total</span>
                     <span>৳{total.toLocaleString()}</span>
                  </div>
                  <div className="flex justify-between items-center text-sm opacity-60">
-                    <span>ডেলিভারি চার্জ</span>
-                    <span className="text-gold">ফ্রি</span>
+                    <span>Delivery Fee</span>
+                    <span className="text-gold">FREE</span>
                  </div>
                  <div className="pt-4 border-t border-white/10 flex justify-between items-center">
-                    <span className="text-sm font-black uppercase tracking-widest">মোট পরিশোধযোগ্য</span>
+                    <span className="text-sm font-black uppercase tracking-widest">Total Payable</span>
                     <span className="text-3xl font-black text-gold">৳{total.toLocaleString()}</span>
                  </div>
               </section>
@@ -188,23 +188,23 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
                     <i className="fa-solid fa-shield-halved"></i>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-navy">পেমেন্ট নিশ্চিত করুন</h3>
-                    <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-1">ভেরিফাইড পেমেন্ট গেটওয়ে</p>
+                    <h3 className="text-xl font-bold text-navy">Confirm Payment</h3>
+                    <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-1">Verified Payment Gateway</p>
                   </div>
                </div>
 
                <div className="bg-gray-50 border-2 border-dashed border-gray-200 p-8 rounded-[2.5rem] text-center space-y-4">
-                  <p className="text-[9px] font-black uppercase text-gray-400 tracking-[0.3em]">পার্সোনাল নম্বর</p>
+                  <p className="text-[9px] font-black uppercase text-gray-400 tracking-[0.3em]">Personal Number</p>
                   <p className="text-3xl font-black text-navy tracking-tight select-all cursor-pointer hover:text-gold transition-colors">01301501827</p>
                   <div className="h-px bg-gray-200 w-16 mx-auto"></div>
                   <p className="text-sm text-navy leading-relaxed">
-                     আপনার {paymentMethod} থেকে <span className="font-black text-gold">৳{total.toLocaleString()}</span> টাকা <span className="font-black bg-navy text-white px-2 py-0.5 rounded">সেন্ডমানি</span> করে নিচের ট্রানজাকশন আইডিটি দিন।
+                     Please <span className="font-black bg-navy text-white px-2 py-0.5 rounded">Send Money</span> of <span className="font-black text-gold">৳{total.toLocaleString()}</span> from your {paymentMethod} account to the number above and enter your Transaction ID below.
                   </p>
                </div>
 
                <div className="bg-white border border-gray-100 p-6 rounded-[2rem] shadow-sm space-y-4">
                   <div className="space-y-2">
-                     <label className="text-[10px] font-bold text-gray-400 ml-2">ট্রানজাকশন আইডি (Transaction ID)</label>
+                     <label className="text-[10px] font-bold text-gray-400 ml-2">Transaction ID</label>
                      <input 
                         type="text"
                         value={transactionId}
@@ -232,7 +232,7 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
               }}
               className="w-full py-6 bg-navy text-white font-black rounded-3xl shadow-2xl hover:bg-gold hover:text-navy transition-all active:scale-95 disabled:opacity-20 flex items-center justify-center space-x-4 uppercase tracking-[0.2em] text-xs"
             >
-               <span>{paymentMethod === 'COD' ? 'অর্ডার কনফার্ম করুন' : 'পেমেন্ট ধাপে এগিয়ে যান'}</span>
+               <span>{paymentMethod === 'COD' ? 'Confirm Order' : 'Proceed to Payment'}</span>
                <i className="fa-solid fa-chevron-right"></i>
             </button>
           ) : (
@@ -242,13 +242,13 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
                  onClick={handleConfirm}
                  className="w-full py-6 bg-navy text-white font-black rounded-3xl shadow-2xl hover:bg-green-600 transition-all active:scale-95 uppercase tracking-[0.2em] text-xs disabled:opacity-30"
                >
-                  অর্ডার সাবমিট করুন
+                  Submit Order
                </button>
                <button 
                  onClick={() => setStep('review')}
                  className="text-center text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-navy transition py-2"
                >
-                  পেছনে ফিরে যান
+                  Go Back
                </button>
             </div>
           )}
