@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Product, Order, User } from '../types';
 
 interface AdminPanelProps {
@@ -34,9 +34,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
   
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [customCategory, setCustomCategory] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const totalRevenue = useMemo(() => orders.reduce((sum, o) => o.status !== 'Cancelled' ? sum + o.total : sum, 0), [orders]);
   const activeOrdersCount = useMemo(() => orders.filter(o => o.status === 'Pending' || o.status === 'Processing').length, [orders]);
+
+  const existingCategories = useMemo(() => {
+    return Array.from(new Set(products.map(p => p.category))).sort();
+  }, [products]);
 
   const copyOrderDetails = (order: Order) => {
     const items = order.items.map(it => `- ${it.name} (x${it.quantity})`).join('\n');
@@ -60,16 +67,42 @@ ${items}
   const openModal = (product: Product | null = null) => {
     setEditingProduct(product);
     setImagePreview(product?.image || null);
+    if (product) {
+      setSelectedCategory(product.category);
+      setCustomCategory('');
+    } else {
+      setSelectedCategory('');
+      setCustomCategory('');
+    }
     setIsModalOpen(true);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    
+    const categoryToSave = selectedCategory === 'Others' ? customCategory : selectedCategory;
+    
+    if (!categoryToSave) {
+      alert("Please select or enter a category");
+      return;
+    }
+
     const productData: Product = {
       id: editingProduct ? editingProduct.id : Math.random().toString(36).substr(2, 9),
       name: formData.get('name') as string,
-      category: formData.get('category') as string,
+      category: categoryToSave,
       price: Number(formData.get('price')),
       stock: Number(formData.get('stock')),
       minStockAlert: 5,
@@ -402,10 +435,32 @@ ${items}
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Name</label>
                 <input name="name" defaultValue={editingProduct?.name} required placeholder="Product Title" className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 text-sm outline-none focus:border-gold/50" />
               </div>
+
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Category</label>
-                <input name="category" defaultValue={editingProduct?.category} required placeholder="Ex: Serums" className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 text-sm outline-none focus:border-gold/50" />
+                <select 
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 text-sm outline-none focus:border-gold/50 text-white"
+                >
+                  <option value="" disabled>Select Category</option>
+                  {existingCategories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                  <option value="Others">Others (Enter Manually)</option>
+                </select>
+                {selectedCategory === 'Others' && (
+                  <input 
+                    type="text"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    placeholder="Enter new category name"
+                    className="w-full mt-2 bg-slate-800/50 border border-white/5 rounded-2xl p-4 text-sm outline-none focus:border-gold/50 text-white animate-in slide-in-from-top-2"
+                    required
+                  />
+                )}
               </div>
+
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Price (৳)</label>
                 <input name="price" type="number" defaultValue={editingProduct?.price} required placeholder="Price" className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 text-sm outline-none focus:border-gold/50" />
@@ -416,15 +471,52 @@ ${items}
               </div>
             </div>
             
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Image URL</label>
-              <input 
-                name="image" 
-                value={imagePreview || ''} 
-                onChange={(e) => setImagePreview(e.target.value)}
-                placeholder="https://..." 
-                className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 text-sm outline-none focus:border-gold/50" 
-              />
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Product Image</label>
+              
+              <div className="flex flex-col md:flex-row gap-6 items-start">
+                <div className="w-full md:w-1/3">
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="aspect-square w-full bg-slate-800/50 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-gold/50 transition-all overflow-hidden relative group"
+                  >
+                    {imagePreview ? (
+                      <>
+                        <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <i className="fa-solid fa-camera text-2xl text-white"></i>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-cloud-arrow-up text-2xl text-slate-500 mb-2"></i>
+                        <span className="text-[9px] font-bold text-slate-500 uppercase">Upload Image</span>
+                      </>
+                    )}
+                  </div>
+                  <input 
+                    ref={fileInputRef}
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageChange} 
+                    className="hidden" 
+                  />
+                </div>
+
+                <div className="flex-1 w-full space-y-4">
+                  <div className="relative">
+                    <span className="absolute -top-3 left-4 px-2 bg-slate-900 text-[8px] font-black uppercase tracking-widest text-slate-600">OR Provide URL</span>
+                    <input 
+                      type="text"
+                      value={imagePreview && !imagePreview.startsWith('data:') ? imagePreview : ''} 
+                      onChange={(e) => setImagePreview(e.target.value)}
+                      placeholder="https://images.unsplash.com/..." 
+                      className="w-full bg-slate-800/50 border border-white/5 rounded-2xl p-4 text-sm outline-none focus:border-gold/50 text-white" 
+                    />
+                  </div>
+                  <p className="text-[9px] text-slate-500 italic">Preferred: Square image (1:1 aspect ratio) for best display.</p>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-1">

@@ -133,7 +133,7 @@ const Hero: React.FC<HeroProps> = ({ latestProduct, onShopClick, onOpenOwnerPage
             <div className="absolute bottom-12 -left-6 md:-left-12 bg-navy p-6 rounded-[2.5rem] shadow-2xl z-20 border border-navy/50 animate-bounce-gentle min-w-[140px]">
                <div className="text-center text-white space-y-1">
                  <div className="text-3xl font-serif italic text-gold leading-none">100%</div>
-                 <p className="text-[9px] font-bold text-white/50 uppercase tracking-[0.2em]">Organic Elements</p>
+                 <p className="text-[9px] font-bold text-white/50 uppercase tracking-[0.2em]">Original Products</p>
                </div>
             </div>
           </div>
