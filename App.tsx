@@ -53,38 +53,91 @@ const App: React.FC = () => {
     paymentMethod: o.payment_method,
     paymentStatus: o.payment_status,
     transactionId: o.transaction_id,
-    // Fix: Corrected property name from 'shipping_address' to 'shippingAddress' to match Order interface
     shippingAddress: o.shipping_address,
     trackingId: o.tracking_id,
     courier: o.courier
   });
 
+  const fetchUserProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+
+    if (data) {
+      return {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        addresses: data.addresses || [],
+        wishlist: data.wishlist || [],
+        skinProfile: data.skin_profile || { type: '', concerns: [] },
+        rewardPoints: data.reward_points || 0,
+        joinedAt: data.joined_at
+      } as User;
+    }
+    return null;
+  };
+
   useEffect(() => {
     const initializeData = async () => {
       setIsLoading(true);
       try {
+        // 1. Fetch Products
         const { data: dbProducts } = await supabase.from('products').select('*');
         if (dbProducts && dbProducts.length > 0) setProductsList(dbProducts);
         else setProductsList(PRODUCTS);
 
-        const savedUserJson = localStorage.getItem('reyah-user');
-        if (savedUserJson) {
-          const savedUser = JSON.parse(savedUserJson);
-          const { data: verifiedUser } = await supabase.from('users').select('*').eq('id', savedUser.id).maybeSingle();
-          if (verifiedUser) {
-            setCurrentUser({
-              ...savedUser,
-              rewardPoints: verifiedUser.reward_points,
-              addresses: verifiedUser.addresses || []
-            });
-          } else {
-            localStorage.removeItem('reyah-user');
-          }
+        // 2. Initial Auth Session Check
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const profile = await fetchUserProfile(session.user.id);
+          if (profile) setCurrentUser(profile);
         }
 
+        // 3. Setup Auth Listener
+        supabase.auth.onAuthStateChange(async (event, session) => {
+          if (event === 'SIGNED_IN' && session?.user) {
+            const profile = await fetchUserProfile(session.user.id);
+            if (profile) {
+              setCurrentUser(profile);
+            } else {
+              // Create profile if missing (safety net for email verification)
+              const newUser: User = {
+                id: session.user.id,
+                name: session.user.user_metadata.full_name || 'Customer',
+                email: session.user.email || '',
+                addresses: [],
+                wishlist: [],
+                skinProfile: { type: '', concerns: [] },
+                rewardPoints: 0,
+                joinedAt: new Date().toISOString()
+              };
+              await supabase.from('users').insert([{
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                joined_at: newUser.joinedAt
+              }]);
+              setCurrentUser(newUser);
+            }
+          } else if (event === 'SIGNED_OUT') {
+            setCurrentUser(null);
+          }
+        });
+
+        // 4. Cart recovery
         const savedCart = localStorage.getItem('reyah-cart');
         if (savedCart) setCart(JSON.parse(savedCart));
 
+        // 5. Admin recovery
         const adminSession = localStorage.getItem('reyah-admin-auth');
         if (adminSession === 'true') {
           setIsAdminAuthenticated(true);
@@ -103,11 +156,6 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('reyah-cart', JSON.stringify(cart));
   }, [cart]);
-
-  useEffect(() => {
-    if (currentUser) localStorage.setItem('reyah-user', JSON.stringify(currentUser));
-    else localStorage.removeItem('reyah-user');
-  }, [currentUser]);
 
   const showToast = (message: string) => {
     setToast({ message, visible: true });
@@ -232,9 +280,9 @@ const App: React.FC = () => {
     if (dbOrders) setOrders(dbOrders.map(mapDbOrderToAppOrder));
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setCurrentUser(null);
-    localStorage.removeItem('reyah-user');
     setIsCustomerProfileOpen(false);
   };
 
